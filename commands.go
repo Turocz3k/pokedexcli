@@ -47,7 +47,8 @@ func commandHelp(c *config) error {
 	fmt.Println("Welcome to the Pokedex!")
 	fmt.Printf("Usage:\n\n")
 	fmt.Println("help: Displays a help message")
-	fmt.Println("map: Show locations in Pokemon world")
+	fmt.Println("map: Show locations in Pokemon world forward")
+	fmt.Println("mapb: Show locations in Pokemon world backward")
 	fmt.Println("exit: Exit the Pokedex")
 
 	/*
