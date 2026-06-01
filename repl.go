@@ -7,28 +7,38 @@ import (
 	"strings"
 )
 
-func startReplt() {
+func startRepl(c *config) {
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Print("Pokedex > ")
 		scanner.Scan()
 
 		input := scanner.Text()
-		clean_input := cleanInput(input)
-		if len(clean_input) == 0 {
+		cleanInput := cleanInput(input)
+		if len(cleanInput) == 0 {
 			continue
 		}
 
-		commandName := clean_input[0]
+		commandName := cleanInput[0]
 
 		switch commandsList[commandName].name {
 		case "exit":
-			err := commandsList[commandName].callback()
+			err := commandsList[commandName].callback(c)
 			if err != nil {
 				fmt.Println(err)
 			}
 		case "help":
-			err := commandsList[commandName].callback()
+			err := commandsList[commandName].callback(c)
+			if err != nil {
+				fmt.Println(err)
+			}
+		case "map":
+			err := commandsList[commandName].callback(c)
+			if err != nil {
+				fmt.Println(err)
+			}
+		case "mapb":
+			err := commandsList[commandName].callback(c)
 			if err != nil {
 				fmt.Println(err)
 			}

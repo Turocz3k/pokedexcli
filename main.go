@@ -1,5 +1,9 @@
 package main
 
 func main() {
-	startReplt()
+	configuration := config{
+		Next:     nil,
+		Previous: nil,
+	}
+	startRepl(&configuration)
 }
