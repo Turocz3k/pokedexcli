@@ -101,8 +101,8 @@ func commandMap(c *config) error {
 	c.Next = locations.Next
 	c.Previous = locations.Previous
 
-	for i := range 20 {
-		fmt.Printf("%v\n", locations.Results[i].Name)
+	for _, v := range locations.Results {
+		fmt.Printf("%v\n", v.Name)
 	}
 	return nil
 }
@@ -133,8 +133,8 @@ func commandMapb(c *config) error {
 	c.Next = locations.Next
 	c.Previous = locations.Previous
 
-	for i := range 20 {
-		fmt.Printf("%v\n", locations.Results[i].Name)
+	for _, v := range locations.Results {
+		fmt.Printf("%v\n", v.Name)
 	}
 
 	return nil
