@@ -16,9 +16,8 @@ type LocationsResponse struct {
 	} `json:"results"`
 }
 
-const baseURL = "https://pokeapi.co/api/v2"
-
 func (c *Client) ListLocations(pageURL *string) (LocationsResponse, error) {
+	const baseURL = "https://pokeapi.co/api/v2"
 	url := baseURL + "/location-area"
 	if pageURL != nil {
 		url = *pageURL

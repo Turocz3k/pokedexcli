@@ -8,7 +8,7 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config) error
+	callback    func(*config, ...string) error
 }
 
 var commandsList = map[string]cliCommand{
@@ -27,6 +27,11 @@ var commandsList = map[string]cliCommand{
 		description: "Show locations in Pokemon world backward",
 		callback:    commandMapb,
 	},
+	"explore": {
+		name:        "explore",
+		description: "Show all pokemons in choosen location",
+		callback:    commandExplore,
+	},
 	"exit": {
 		name:        "exit",
 		description: "Exit the Pokedex",
@@ -34,19 +39,20 @@ var commandsList = map[string]cliCommand{
 	},
 }
 
-func commandExit(c *config) error {
+func commandExit(c *config, s ...string) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
-func commandHelp(c *config) error {
+func commandHelp(c *config, s ...string) error {
 	fmt.Println()
 	fmt.Println("Welcome to the Pokedex!")
 	fmt.Printf("Usage:\n\n")
 	fmt.Println("help: Displays a help message")
 	fmt.Println("map: Show locations in Pokemon world forward")
 	fmt.Println("mapb: Show locations in Pokemon world backward")
+	fmt.Println("explore: Show all pokemons in choosen location")
 	fmt.Println("exit: Exit the Pokedex")
 
 	/*
@@ -57,7 +63,7 @@ func commandHelp(c *config) error {
 	return nil
 }
 
-func commandMap(c *config) error {
+func commandMap(c *config, s ...string) error {
 	resp, err := c.pokeapiClient.ListLocations(c.nextLocationsURL)
 	if err != nil {
 		return err
@@ -70,7 +76,7 @@ func commandMap(c *config) error {
 	return nil
 }
 
-func commandMapb(c *config) error {
+func commandMapb(c *config, s ...string) error {
 	resp, err := c.pokeapiClient.ListLocations(c.prevLocationsURL)
 	if err != nil {
 		return err
@@ -79,6 +85,21 @@ func commandMapb(c *config) error {
 	c.prevLocationsURL = resp.Previous
 	for _, v := range resp.Results {
 		fmt.Println(v.Name)
+	}
+	return nil
+}
+
+func commandExplore(c *config, place ...string) error {
+	resp, err := c.pokeapiClient.GetLocation(place[0])
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Exploring pastoria-city-area...")
+	fmt.Println("Found Pokemon:")
+
+	for _, v := range resp.PokemonEncounters {
+		fmt.Println("- " + v.Pokemon.Name)
 	}
 	return nil
 }

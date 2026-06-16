@@ -23,22 +23,27 @@ func startRepl(c *config) {
 
 		switch commandsList[commandName].name {
 		case "exit":
-			err := commandsList[commandName].callback(c)
+			err := commandsList[commandName].callback(c, "")
 			if err != nil {
 				fmt.Println(err)
 			}
 		case "help":
-			err := commandsList[commandName].callback(c)
+			err := commandsList[commandName].callback(c, "")
 			if err != nil {
 				fmt.Println(err)
 			}
 		case "map":
-			err := commandsList[commandName].callback(c)
+			err := commandsList[commandName].callback(c, "")
 			if err != nil {
 				fmt.Println(err)
 			}
 		case "mapb":
-			err := commandsList[commandName].callback(c)
+			err := commandsList[commandName].callback(c, "")
+			if err != nil {
+				fmt.Println(err)
+			}
+		case "explore":
+			err := commandsList[commandName].callback(c, cleanInput[1])
 			if err != nil {
 				fmt.Println(err)
 			}
