@@ -1,9 +1,7 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
 	"os"
 )
 
@@ -59,83 +57,28 @@ func commandHelp(c *config) error {
 	return nil
 }
 
-///////////////////////Bellow everything to package internal/pokeapi  //////////////////////
-
-type locationResApi struct {
-	Count    int     `json:"count"`
-	Next     *string `json:"next"`
-	Previous *string `json:"previous"`
-	Results  []struct {
-		Name string `json:"name"`
-		URL  string `json:"url"`
-	} `json:"results"`
-}
-
-type config struct {
-	Next     *string `json:"next"`
-	Previous *string `json:"previous"`
-}
-
 func commandMap(c *config) error {
-	url := "https://pokeapi.co/api/v2/location-area"
-	if c.Next != nil {
-		url = *c.Next
-	}
-	res, err := http.Get(url)
+	resp, err := c.pokeapiClient.ListLocations(c.nextLocationsURL)
 	if err != nil {
-		return fmt.Errorf("Http.Get() doesnt work!")
+		return err
 	}
-	defer res.Body.Close()
-
-	if res.StatusCode > 299 {
-		return fmt.Errorf("%v", res.StatusCode)
-	}
-
-	var locations locationResApi
-	dec := json.NewDecoder(res.Body)
-	err = dec.Decode(&locations)
-	if err != nil {
-		return fmt.Errorf("Decode doesnt work!")
-	}
-
-	c.Next = locations.Next
-	c.Previous = locations.Previous
-
-	for _, v := range locations.Results {
-		fmt.Printf("%v\n", v.Name)
+	c.nextLocationsURL = resp.Next
+	c.prevLocationsURL = resp.Previous
+	for _, v := range resp.Results {
+		fmt.Println(v.Name)
 	}
 	return nil
 }
 
 func commandMapb(c *config) error {
-	url := "https://pokeapi.co/api/v2/location-area"
-	if c.Previous != nil {
-		url = *c.Previous
-	}
-
-	res, err := http.Get(url)
+	resp, err := c.pokeapiClient.ListLocations(c.prevLocationsURL)
 	if err != nil {
-		return fmt.Errorf("Http.Get() doesnt work!")
+		return err
 	}
-	defer res.Body.Close()
-
-	if res.StatusCode > 299 {
-		return fmt.Errorf("%v", res.StatusCode)
+	c.nextLocationsURL = resp.Next
+	c.prevLocationsURL = resp.Previous
+	for _, v := range resp.Results {
+		fmt.Println(v.Name)
 	}
-
-	var locations locationResApi
-	dec := json.NewDecoder(res.Body)
-	err = dec.Decode(&locations)
-	if err != nil {
-		return fmt.Errorf("Decode doesnt work!")
-	}
-
-	c.Next = locations.Next
-	c.Previous = locations.Previous
-
-	for _, v := range locations.Results {
-		fmt.Printf("%v\n", v.Name)
-	}
-
 	return nil
 }
