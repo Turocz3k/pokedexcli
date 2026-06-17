@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 )
 
@@ -32,6 +33,21 @@ var commandsList = map[string]cliCommand{
 		description: "Show all pokemons in choosen location",
 		callback:    commandExplore,
 	},
+	"catch": {
+		name:        "catch",
+		description: "Catch choosen pokemon",
+		callback:    commandCatch,
+	},
+	"inspect": {
+		name:        "inspect",
+		description: "Check pokemon in your possesion",
+		callback:    commandInspect,
+	},
+	"pokedex": {
+		name:        "pokedex",
+		description: "Check pokemons in your possesion",
+		callback:    commandPokedex,
+	},
 	"exit": {
 		name:        "exit",
 		description: "Exit the Pokedex",
@@ -53,6 +69,9 @@ func commandHelp(c *config, s ...string) error {
 	fmt.Println("map: Show locations in Pokemon world forward")
 	fmt.Println("mapb: Show locations in Pokemon world backward")
 	fmt.Println("explore: Show all pokemons in choosen location")
+	fmt.Println("catch: Catch choosen pokemon")
+	fmt.Println("inspect: Check pokemon in your possesion")
+	fmt.Println("pokedex: Check pokemons in your possesion")
 	fmt.Println("exit: Exit the Pokedex")
 
 	/*
@@ -95,11 +114,69 @@ func commandExplore(c *config, place ...string) error {
 		return err
 	}
 
-	fmt.Println("Exploring pastoria-city-area...")
+	fmt.Println("Exploring " + resp.Name + "...")
 	fmt.Println("Found Pokemon:")
 
 	for _, v := range resp.PokemonEncounters {
 		fmt.Println("- " + v.Pokemon.Name)
 	}
+	return nil
+}
+
+func commandCatch(c *config, name ...string) error {
+	fmt.Println("Throwing a Pokeball at " + name[0] + "...")
+
+	resp, err := c.pokeapiClient.GetPokemon(name[0])
+	if err != nil {
+		return err
+	}
+
+	chance := rand.Intn(100)
+
+	if (resp.BaseExperience / 10) <= chance {
+		c.pokedex[name[0]] = resp
+		fmt.Println(name[0] + " was caught!")
+		return nil
+	}
+
+	fmt.Println(name[0] + " escaped!")
+	return nil
+}
+
+func commandInspect(c *config, name ...string) error {
+	v, ok := c.pokedex[name[0]]
+	if !ok {
+		fmt.Println("you have not caught that pokemon")
+		return nil
+	}
+
+	fmt.Println("Name: " + v.Name)
+	fmt.Printf("Height: %d\n", v.Height)
+	fmt.Printf("Weight: %d\n", v.Weight)
+
+	fmt.Println("Stats:")
+	for _, v := range v.Stats {
+		fmt.Printf(" -%s: %d\n", v.Stat.Name, v.BaseStat)
+	}
+
+	fmt.Println("Types:")
+	for _, v := range v.Types {
+		fmt.Println(" -" + v.Type.Name)
+	}
+
+	return nil
+}
+
+func commandPokedex(c *config, s ...string) error {
+	if len(c.pokedex) < 1 {
+		fmt.Println("Pokdex is empty!")
+		return nil
+	}
+
+	fmt.Println("Your Pokedex:")
+	for _, v := range c.pokedex {
+		fmt.Println(" - " + v.Name)
+	}
+
 	return nil
 }

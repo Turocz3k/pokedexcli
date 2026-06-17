@@ -47,6 +47,21 @@ func startRepl(c *config) {
 			if err != nil {
 				fmt.Println(err)
 			}
+		case "catch":
+			err := commandsList[commandName].callback(c, cleanInput[1])
+			if err != nil {
+				fmt.Println(err)
+			}
+		case "inspect":
+			err := commandsList[commandName].callback(c, cleanInput[1])
+			if err != nil {
+				fmt.Println(err)
+			}
+		case "pokedex":
+			err := commandsList[commandName].callback(c, "")
+			if err != nil {
+				fmt.Println(err)
+			}
 		default:
 			fmt.Println("Unknown command")
 		}
